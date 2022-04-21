@@ -12,7 +12,7 @@ A simple app built with FastAPI
 - User Database Dashboard
 - User Statistics
 
-### Demo UI
+### Live Demo
 - [landing page](https://simple-app-420.herokuapp.com/static/single_page.htm)
 - [admin page](https://simple-app-420.herokuapp.com/static/admin.htm)
 
