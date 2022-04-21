@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>user database dashboard</title>
+        <script type="text/javascript" src="/static/js/admin.js"></script>
+        <link rel="stylesheet" href="/static/css/style.css">
+        <script type="text/javascript">
+            setInterval("autoRefresh()",1000); 
+        </script>
+    </head>
+    <body>
+        <div id="div_statistics">
+            <h3>Statistics</h3>
+            <div style="text-align: center;">
+                <span style="display: inline-block; width:30%; height:150px; border-style: solid;">
+                    <p style="font-size: 10px;">Total number of users who have signed up</p>
+                    <p style="font-size: 30px;" id="label_total_signup_users">0</p>
+                </span>
+                <span style="display: inline-block; width:30%; height:150px; border-style: solid;">
+                    <p style="font-size: 10px;">Total number of users with active sessions today</p>
+                    <p style="font-size: 30px;" id="label_active_users_today">0</p>
+                </span>
+                <span style="display: inline-block; width:30%; height:150px; border-style: solid;">
+                    <p style="font-size: 10px;">Average number of active session users in the last 7 days</p>
+                    <p style="font-size: 30px;" id="label_active_users_7days">0</p>
+                </span>
+            </div>
+         </div>
+        <hr>
+        <div>
+            <h3>User Database</h3>
+            <div id="div_user_database"></div>
+        </div>
+    </body>
+</html>
+

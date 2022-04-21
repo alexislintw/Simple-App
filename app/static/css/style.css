@@ -1,0 +1,70 @@
+.api_box {
+    border-style: solid; 
+    margin: 10px; 
+    padding: 20px;
+}
+
+.action_box {
+    background-color: rgb(25, 168, 234);
+    padding: 5px;
+    color: white;
+}
+
+.endpoint_box {
+    font-weight: bold;
+}
+
+.execute_box {
+    background-color:rgb(0, 119, 255); 
+    padding: 5px;
+    text-align: center;
+    color: white;
+    text-anchor: none;
+}
+
+.pure-table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    empty-cells: show;
+    border: 1px solid #cbcbcb;
+    margin-left: auto;
+    margin-right: auto;
+}
+     
+.pure-table caption {
+    color: #000;
+    font: italic 85%/1 arial,sans-serif;
+    padding: 1em 0;
+    text-align: center;
+}
+     
+.pure-table td,.pure-table th {
+    border-left: 1px solid #cbcbcb;
+    border-width: 0 0 0 1px;
+    font-size: inherit;
+    margin: 0;
+    overflow: visible;
+    padding: .5em 1em;
+}
+     
+.pure-table thead {
+    background-color: #e0e0e0;
+    color: #000;
+    text-align: left;
+    vertical-align: bottom;
+}
+     
+.pure-table td {
+    background-color: transparent;
+}     
+
+
+a:link {
+    color: white; 
+    text-decoration: none;
+}
+
+a:visited {
+    color: white; 
+    text-decoration: none;
+}

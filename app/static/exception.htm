@@ -1,0 +1,13 @@
+<html>
+    <script>
+        let error_message = {
+            1: 'Authentication failed',
+            2: 'Email already exists',
+            3: 'Account not registered',
+        }
+        let urlSearchParams = new URLSearchParams(window.location.search);
+        let params = Object.fromEntries(urlSearchParams.entries());
+        alert(error_message[params['msg']]);
+        location.replace('/static/single_page.htm');
+    </script>
+</html>

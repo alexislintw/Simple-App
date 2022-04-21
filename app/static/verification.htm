@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>a simple app</title>
+    </head>
+    <body>
+        <div id="div_verification">
+            <h3>Verifing Your Email ...</h3>
+        </div>
+
+        <script>
+        function get_current_user() {
+            fetch('/users/', {
+                method : 'GET',
+                credentials: 'include',
+                headers: {
+			        "Content-Type": "application/json",
+                    "Accept": "application/json",
+		        },
+            })
+            .then((response) => response.json())
+            .then((json) => {
+                if(json != null) {
+                    if(json["is_active"]) {
+                        alert('Verified yet');
+                        location.replace('/static/single_page.htm');
+                    }
+                    else {
+                        verify_email();
+                    }
+                }
+                else {
+                    alert('Email not exists');
+                    location.replace('/static/single_page.htm');
+                }
+            }).catch((err) => {
+                console.log(err);
+            });
+        }
+
+        function verify_email() {
+            fetch('/users/verify-email', {
+                method: 'GET',
+                credentials: 'include',
+                header: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+            })
+            .then((response) => {
+                if(response.status === 200) {
+                    alert('200: Verification successful');
+                }
+                else if(response.status === 400) {
+                    alert('400: Email not exists');
+                }
+                else {
+                    alert('code:'+response.status);
+                }
+                location.replace('/static/single_page.htm');
+            });
+        }
+
+        window.onload = async () => {
+            await get_current_user();
+        }  
+        </script>
+        
+    </body>
+</html>
+

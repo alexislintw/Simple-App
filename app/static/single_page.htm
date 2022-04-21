@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>a simple app</title>
+    </head>
+    <body>
+        <div id="div_home">
+            <h3>welcome</h3>
+            <button style="width:20%" onclick="showRegisterView()">Sign up</button><br/>
+            <button style="width:20%" onclick="showLoginView()">Login</button><br/>
+        </div>
+        <div id="div_resigter">
+            <h3>Sign Up</h3>
+            <form id="form_register">
+                <span style="display: inline-block; width:20%">Email</span><input type="text" name="email" size="50" placeholder="Please enter your email"><br/>
+                <span style="display: inline-block; width:20%">Password: </span><input type="password" name="password" size="50" placeholder="Please enter a password"><br/>
+                <span style="display: inline-block; width:20%">Re-enter Password: </span><input type="password" name="re_enter_password" size="50" placeholder="Please re-enter the password"><br/>
+                <button type="submit">Sign up</button><br/>
+            </form>
+            <hr>
+            <p><button style="width:20%" onclick="location.href='/third-party-oauth2/google/register'">Sign up with Google Account</button></p>
+            <p><button style="width:20%" onclick="location.href='/third-party-oauth2/facebook/register'">Sign up with Facebook Account</button></p>
+        </div>
+        <div id="div_login">
+            <h3>Login</h3>
+            <form id="form_login">
+                <span style="display: inline-block; width:10%">Email</span><input type="text" name="username" size="50" placeholder="Please enter your email"><br/>
+                <span style="display: inline-block; width:10%">Password: </span><input type="password" name="password" size="50" placeholder="Please enter a password"><br/>
+                <button type="submit">Login</button><br/>
+            </form>
+            <hr>
+            <p><button style="width:20%" onclick="location.href='/third-party-oauth2/google/login'">Login with Google Account</button></p>
+            <p><button style="width:20%" onclick="location.href='/third-party-oauth2/facebook/login'">Login with Facebook Account</button></p>
+        </div>
+        <div id="div_verification">
+            <h3>Please Verify Your Email</h3>
+            <button id="button_resend_email">Resend Email</button><br/>
+        </div>
+        <div id="div_dashboard">
+            <h3>Simple Dashboard</h3>
+            <hr>
+            <p>User Profile</p>
+            <div>
+                <span style="display: inline-block; width:20%">email: </span><span id="p_email">email</span><br/>
+                <span style="display: inline-block; width:20%">name: </span><span id="p_name">unnamed</span><br/>
+                <form id="form_edit_name">
+                    <span style="display: inline-block; width:20%">New name: </span><input type="text" id="display_name" name="display_name" size="50" placeholder="Please enter a new name">
+                    <button type="submit">Submit</button><br/>
+                </form>
+            </div>
+            <hr>
+            <div>
+                <p>Reset Password</p>
+                <form id="form_reset_password">
+                    <span style="display: inline-block; width:20%">Old Password: </span><input type="password" name="old_password" size="50" placeholder="Please enter your old password"><br/>
+                    <span style="display: inline-block; width:20%">New Password: </span><input type="password" name="new_password" size="50" placeholder="Please enter a new password"><br/>
+                    <span style="display: inline-block; width:20%">Re-enter New Password: </span><input type="password" name="re_enter_new_password" size="50" placeholder="Please re-enter the new password"><br/>
+                    <button type="submit">Submit</button><br/>
+                </form>
+            </div>
+            <hr>
+            <div>
+                <button id="button_logout">Log out</button>
+            </div>
+        </div>
+
+        <script>
+        function switchUi(elementId) {
+            const arrElementIds = ['div_home','div_resigter','div_login','div_verification','div_dashboard'];
+            for (let i = 0; i < arrElementIds.length; i++) {
+                _id = arrElementIds[i];
+                e = document.getElementById(_id);
+                if(elementId == _id) {
+                    e.style.display = 'inline';
+                }
+                else {
+                    e.style.display = 'none';
+                }
+            }
+        }
+
+        function showHomeView() {
+            switchUi('div_home');
+        }
+
+        function showRegisterView() {
+            switchUi('div_resigter');
+        }
+
+        function showLoginView() {
+            switchUi('div_login');
+        } 
+
+        function showVerificationView() {
+            switchUi('div_verification');
+        }
+
+        function showDashboardView(email, name) {
+            document.getElementById('p_email').textContent = email;
+            document.getElementById('p_name').textContent = name;            
+            switchUi('div_dashboard');
+        }
+
+        function getCurrentUser() {
+            fetch('/users/', {
+                method : 'GET',
+                credentials: 'include',
+                headers: {
+			        'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+		        },
+            })
+            .then((response) => {
+                if(response.status === 200) {
+                    return response.json();
+                }
+                else {
+                    return null;
+                }
+            })
+            .then((json) => {
+                if(json != null) {
+                    if(json['is_active']) {
+                        emailText = json['email'];
+                        nameText = (json['display_name'] != null)?json['display_name']:'unnamed';
+                        showDashboardView(emailText, nameText);
+                    }
+                    else {
+                        showVerificationView();
+                    }
+                }
+                else {
+                    showHomeView();
+                }
+            });
+        }
+
+        document.getElementById('form_register').onsubmit = function(evt) {
+            evt.preventDefault();
+            let formData = new FormData(document.getElementById('form_register'));
+            let data = JSON.stringify(Object.fromEntries(formData));
+            fetch('/users/', {
+                method : 'POST',
+                headers: {
+			        'Content-Type': 'application/json',
+			        'Accept': 'application/json',
+		        },
+                body : data,
+            })
+            .then((response) => {
+                if(response.status === 200) {
+                    alert('200: Registration Successful');
+                    document.getElementById('form_register').reset();
+                    showVerificationView();
+                }
+                else if(response.status === 400) {
+                    alert('400: User with the email address already exists');
+                    document.getElementById('form_register').reset();
+                }
+                else if(response.status === 401) {
+                    alert('401: Passwords are not identical');
+                    document.getElementById('form_register').reset();
+                }
+                else if(response.status === 402) {
+                    alert('402: Password is invalid');
+                    document.getElementById('form_register').reset();
+                }
+                else {
+                    alert(response.status);
+                    document.getElementById('form_register').reset();
+                }
+            });
+        }
+
+        document.getElementById('form_login').onsubmit = async(evt) => {
+            evt.preventDefault();
+            let formData = new FormData(document.getElementById('form_login'));
+            let data = new URLSearchParams(formData);
+            fetch('/login/access-token', {
+                method: 'POST',
+                credentials: 'include',
+                header: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Accept': 'application/json',
+                },
+                body: data,
+            })
+            .then((response) => {
+                if(response.status === 200) {
+                    alert('200: Login successful');
+                    document.getElementById('form_login').reset();
+                    getCurrentUser();
+                }
+                else if(response.status === 401) {
+                    alert('401: Email or password not correct');
+                    document.getElementById('form_login').reset();
+                }
+            });
+        }
+
+        document.getElementById('button_resend_email').onclick = async(evt) => {
+            evt.preventDefault();
+            fetch('/users/resend-email', {
+                method : 'GET',
+                credentials: 'include',
+                headers: {
+			        'Content-Type': 'application/x-www-form-urlencoded',
+			        'Accept': 'application/json',
+		        },
+            })
+            .then((response) => {
+                if(response.status === 200) {
+                    alert('200: Email sent successful');
+                }
+                else if(response.status === 400) {
+                    alert('400: User not found');
+                }
+                else {
+                    alert(response.status);
+                }
+            });
+        }
+
+        document.getElementById('form_reset_password').onsubmit = async(evt) => {
+            evt.preventDefault();
+            let formData = new FormData(document.getElementById('form_reset_password'));
+            let data = JSON.stringify(Object.fromEntries(formData));
+            fetch('/users/password', {
+                method : 'PUT',
+                credentials: 'include',
+                headers: {
+			        'Content-Type': 'application/json',
+			        'Accept': 'application/json',
+		        },
+                body : data,
+            })
+            .then((response) => {
+                if(response.status === 200) {
+                    alert('200: Update successful');
+                    document.getElementById('form_reset_password').reset();
+                    getCurrentUser();
+                }
+                else if(response.status === 400) {
+                    alert('400: User not found');
+                    document.getElementById('form_reset_password').reset();
+                }
+                else if(response.status === 401) {
+                    alert('401: Email not verified');
+                    document.getElementById('form_reset_password').reset();
+                }
+                else if(response.status === 402) {
+                    alert('402: Old password is not correct');
+                    document.getElementById('form_reset_password').reset();
+                }
+                else if(response.status === 403) {
+                    alert('403: Passwords are not identical');
+                    document.getElementById('form_reset_password').reset();
+                }
+                else if(response.status === 404) {
+                    alert('404: Password is invalid');
+                    document.getElementById('form_reset_password').reset();
+                }
+            });
+        }
+
+        document.getElementById('form_edit_name').onsubmit = async(evt) => {
+            evt.preventDefault();
+            let formData = new FormData(document.getElementById('form_edit_name'));
+            let data = new URLSearchParams(formData);
+            fetch('/users/profile', {
+                method : 'PUT',
+                credentials: 'include',
+                headers: {
+			        'Content-Type': 'application/x-www-form-urlencoded',
+			        'Accept': 'application/json',
+		        },
+                body : data,
+            })
+            .then((response) => {
+                if(response.status === 200) {
+                    alert('200: Update successful');
+                    document.getElementById('form_edit_name').reset();
+                    getCurrentUser();
+                }
+                else if(response.status === 400) {
+                    alert('400: User not found');
+                }
+                else if(response.status === 401) {
+                    alert('401: Email not verified');
+                }
+            });
+        }
+
+        document.getElementById('button_logout').onclick = async(evt) => {
+            evt.preventDefault();
+            fetch('/logout', {
+                method: 'GET',
+                credentials: 'include',
+                header: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Accept': 'application/json',
+                },
+            })
+            .then((response) => {
+                if(response.status === 200) {
+                    alert('200: Logout successful');
+                    showHomeView();
+                }
+                else if(response.status === 400) {
+                    alert('400: User not found');
+                }
+                else {
+                    alert('code: '+response.status)
+                }
+            });
+        }        
+
+        window.onload = async () => {
+            await getCurrentUser();
+        }
+        </script>
+        
+    </body>
+</html>
+
